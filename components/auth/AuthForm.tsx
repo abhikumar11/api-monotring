@@ -8,11 +8,7 @@ import { useLogin } from "@/hooks/auth/useAuth";
 import { useRegister } from "@/hooks/auth/useAuth";
 import { setUser } from "@/store/slices/authSlice";
 import { toast } from "react-toastify";
-import { AxiosError } from "axios";
-
-interface ApiErrorResponse {
-  message?: string;
-}
+import axios from "axios";
 
 interface AuthFormInputs {
   name?: string;
@@ -56,11 +52,12 @@ const AuthForm = ({ mode }: AuthFormProps) => {
 
             router.push("/dashboard");
           },
-          onError: (error: AxiosError<ApiErrorResponse>) => {
-            toast.error(
-              error?.response?.data?.message ||
-                "Login failed. Please try again."
-            );
+          onError: (error) => {
+            const message =
+              axios.isAxiosError<{ message?: string }>(error)
+                ? error.response?.data?.message
+                : undefined;
+            toast.error(message || "Login failed. Please try again.");
           }
         }
       );
@@ -80,11 +77,12 @@ const AuthForm = ({ mode }: AuthFormProps) => {
           dispatch(setUser(response.user));
           router.push("/dashboard");
         },
-        onError: (error: AxiosError<ApiErrorResponse>) => {
-          toast.error(
-            error?.response?.data?.message ||
-              "Registration failed. Please try again."
-          );
+        onError: (error) => {
+          const message =
+            axios.isAxiosError<{ message?: string }>(error)
+              ? error.response?.data?.message
+              : undefined;
+          toast.error(message || "Registration failed. Please try again.");
         }
       }
     );
@@ -299,9 +297,9 @@ const AuthForm = ({ mode }: AuthFormProps) => {
         
             {errorMessage && (
               <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-                {(errorMessage as AxiosError<ApiErrorResponse>)
-                ?.response?.data?.message ||
-                  "Something went wrong. Please try again."}
+                {axios.isAxiosError<{ message?: string }>(errorMessage)
+                ? errorMessage.response?.data?.message
+                : "Something went wrong. Please try again."}
               </div>
             )}
 
