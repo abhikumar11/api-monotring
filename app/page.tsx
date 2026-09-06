@@ -1,8 +1,8 @@
 import AuthForm from "@/components/auth/AuthForm"
 
-const Home=()=>{
+const Home = () => {
     return (
-        <AuthForm mode="login"/>
+        <AuthForm mode="login" />
     )
 }
-export default Home 
+export default Home
